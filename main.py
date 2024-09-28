@@ -1,13 +1,15 @@
 import os
 import uvicorn
+import openpyxl
 
 from dotenv import load_dotenv
+from datetime import datetime
 
 from fastapi import FastAPI, Request, HTTPException, Header
 
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
-from linebot.v3.webhooks import MessageEvent, TextMessageContent
+from linebot.v3.webhooks import MessageEvent, TextMessageContent, BeaconEvent
 
 from linebot.v3.messaging import (
     ApiClient, 
@@ -18,8 +20,6 @@ from linebot.v3.messaging import (
     # FlexMessage, 
     # Emoji,
 )
-
-from response_message import reponse_message
 
 
 app = FastAPI()
@@ -50,14 +50,33 @@ def handle_message(event: MessageEvent):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
 
-        reply_message = reponse_message(event) # TextMessage, FlexMessage
+        reply_message = "Hello from Dev Environment"    # เพิ่มเติมข้อความตรงนี้เพื่อตอบกลับ
 
         line_bot_api.reply_message(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[reply_message]
+                messages=[TextMessage(text=reply_message)]
             )
         )
+
+# @handler.add(BeaconEvent)
+# def handle_beacon(event: BeaconEvent):
+#     print(event)
+
+#     user_id = event.source.user_id  ## รับ user_id จากคนที่เข้ามา
+#     request_timestamp = event.timestamp  ## รับเวลาจากคนที่เข้ามา
+
+#     file_path = "excel/data.xlsx"
+#     workbook = openpyxl.load_workbook(file_path)
+#     sheet = workbook.active
+
+#     workbook = openpyxl.Workbook()
+#     sheet = workbook.active
+
+#     new_record = [f"{user_id}", f"{request_timestamp}"]   ## ข้อความที่จะเพิ่มเข้าไปใน Excel
+#     sheet.append(new_record)
+#     workbook.save(file_path)
+#     print("Record added successfully!")
 
 
 if __name__ == "__main__":
